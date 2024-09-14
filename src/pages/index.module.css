@@ -6,6 +6,7 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
+  background-color: #cfe1e8;
 }
 
 .board {
@@ -13,7 +14,8 @@
   flex-wrap: wrap;
   width: 400px;
   height: 400px;
-  background-color: green;
+  background-color: #78b6cd;
+  border: solid 3px #317590;
 }
 
 .cell {
@@ -22,7 +24,7 @@
   justify-content: center;
   width: 12.5%;
   height: 12.5%;
-  border: solid 1px black;
+  border: solid 1px #317590;
 }
 
 .stone {

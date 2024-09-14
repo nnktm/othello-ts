@@ -12,6 +12,12 @@ const DIRECTIONS = [
   [-1, -1],
 ];
 
+const showTurn = (turn: number) => {
+  if (turn === 1) {
+    return true;
+  }
+};
+
 const checkPutable = (cx: number, cy: number, board: number[][], turn: number) => {
   if (board[cy][cx] === 1 || board[cy][cx] === 2) {
     return;
@@ -90,7 +96,7 @@ const Home = () => {
                 className={styles.stone}
                 style={{
                   backgroundColor:
-                    color === 1 ? 'black' : color === 2 ? 'white' : color === 3 ? 'pink' : '',
+                    color === 1 ? '#3175AA' : color === 2 ? 'white' : color === 3 ? 'pink' : '',
                   width: color === 3 ? '20%' : '70%',
                   height: color === 3 ? '20%' : '70%',
                 }}
@@ -99,6 +105,7 @@ const Home = () => {
           )),
         )}
       </div>
+      <div className={styles.showInformation} />
     </div>
   );
 };
