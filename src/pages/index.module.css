@@ -1,6 +1,5 @@
 .container {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
@@ -14,8 +13,19 @@
   flex-wrap: wrap;
   width: 400px;
   height: 400px;
-  background-color: #78b6cd;
-  border: solid 3px #317590;
+  background-color: #acd8e8;
+  border: solid 3px #68acc6;
+}
+
+.showInformation {
+  padding-right: 50px;
+  padding-left: 50px;
+  margin: 15px;
+  font-size: 15px;
+  color: #3b7b94;
+  background-color: #ccddea;
+  border: solid 5px #68acc6;
+  border-radius: 20px;
 }
 
 .cell {
@@ -24,7 +34,7 @@
   justify-content: center;
   width: 12.5%;
   height: 12.5%;
-  border: solid 1px #317590;
+  border: solid 1px #68acc6;
 }
 
 .stone {
