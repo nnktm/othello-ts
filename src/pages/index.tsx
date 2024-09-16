@@ -14,8 +14,16 @@ const DIRECTIONS = [
 
 const showTurn = (turn: number) => {
   if (turn === 1) {
-    return true;
+    return '黒';
+  } else {
+    return '白';
   }
+};
+
+const countCell = (cbx: number, cby: number, board: number[][]) => {
+  if (board[cbx][cby] === 1) return 'black';
+  if (board[cbx][cby] === 2) return 'white';
+  return null;
 };
 
 const checkPutable = (cx: number, cy: number, board: number[][], turn: number) => {
@@ -36,6 +44,10 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
     }
   }
 };
+
+let blackCell = 2;
+
+let whiteCell = 2;
 
 const Home = () => {
   const [board, setBoard] = useState([
@@ -70,8 +82,18 @@ const Home = () => {
             for (let i = distance; i > 0; i--) {
               newBoard[y + dy * i][x + dx * i] = turn;
             }
+            blackCell = 0;
+            whiteCell = 0;
             for (let cy = 0; cy < 8; cy++) {
               for (let cx = 0; cx < 8; cx++) {
+                if (countCell(cx, cy, newBoard)) {
+                  if (countCell(cx, cy, newBoard) === 'black') {
+                    blackCell = blackCell + 1;
+                  }
+                  if (countCell(cx, cy, newBoard) === 'white') {
+                    whiteCell = whiteCell + 1;
+                  }
+                }
                 if (newBoard[cy][cx] === 3) newBoard[cy][cx] = 0;
                 if (checkPutable(cx, cy, newBoard, 3 - turn)) {
                   newBoard[cy][cx] = 3;
@@ -105,7 +127,11 @@ const Home = () => {
           )),
         )}
       </div>
-      <div className={styles.showInformation} />
+      <div className={styles.showInformation}>
+        <p>{showTurn(turn)}のターン</p>
+        <p>黒：{blackCell}枚</p>
+        <p>白：{whiteCell}枚</p>
+      </div>
     </div>
   );
 };
