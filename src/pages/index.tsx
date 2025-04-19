@@ -42,6 +42,7 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
           board[cy + dy * distance][cx + dx * distance] === 0
         )
           break;
+        if (board[cy + dy * distance][cx + dx * distance] === 3 - turn) continue;
         if (board[cy + dy * distance][cx + dx * distance] === turn) {
           return true;
         }
