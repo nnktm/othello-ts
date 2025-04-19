@@ -37,9 +37,15 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
     if (board[cy + dy][cx + dx] === 3 - turn) {
       for (let distance = 2; distance < 8; distance++) {
         if (board[cy + dy * distance] === undefined) break;
+        if (
+          board[cy + dy * distance][cx + dx * distance] === 3 ||
+          board[cy + dy * distance][cx + dx * distance] === 0
+        )
+          break;
         if (board[cy + dy * distance][cx + dx * distance] === turn) {
           return true;
         }
+        return false;
       }
     }
   }
@@ -75,10 +81,20 @@ const Home = () => {
       if (newBoard[y + dy] === undefined) continue;
       if (newBoard[y + dy][x + dx] === 3 - turn) {
         for (let distance = 2; distance < 8; distance++) {
+          let isok = true;
           if (newBoard[y + dy * distance] === undefined) break;
           if (newBoard[y + dy * distance][x + dx * distance] === turn) {
-            newBoard[y][x] = turn;
-
+            for (let distanceCheck = 2; distanceCheck < distance; distanceCheck++) {
+              if (
+                newBoard[y + dy * distanceCheck][x + dx * distanceCheck] === 0 ||
+                newBoard[y + dy * distanceCheck][x + dx * distanceCheck] === 3
+              ) {
+                isok = false;
+              }
+            }
+            if (isok === true) {
+              newBoard[y][x] = turn;
+            }
             for (let i = distance; i > 0; i--) {
               newBoard[y + dy * i][x + dx * i] = turn;
             }
@@ -95,9 +111,7 @@ const Home = () => {
                   }
                 }
                 if (newBoard[cy][cx] === 3) newBoard[cy][cx] = 0;
-                if (checkPutable(cx, cy, newBoard, 3 - turn)) {
-                  newBoard[cy][cx] = 3;
-                }
+                if (checkPutable(cx, cy, newBoard, 3 - turn)) newBoard[cy][cx] = 3;
               }
             }
             setBoard(newBoard);
