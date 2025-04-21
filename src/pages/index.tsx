@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import styles from './index.module.css';
 
+const startBord = [
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 3, 0, 0, 0],
+  [0, 0, 0, 1, 2, 3, 0, 0],
+  [0, 0, 3, 1, 1, 0, 0, 0],
+  [0, 0, 0, 3, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const DIRECTIONS = [
   [0, -1],
   [1, -1],
@@ -23,6 +34,7 @@ const showTurn = (turn: number) => {
 const countCell = (cbx: number, cby: number, board: number[][]) => {
   if (board[cbx][cby] === 1) return 'black';
   if (board[cbx][cby] === 2) return 'white';
+  if (board[cbx][cby] === 3) return 'putable';
   return null;
 };
 
@@ -56,17 +68,12 @@ let blackCell = 2;
 
 let whiteCell = 2;
 
+let putableCell = 4;
+
+let skipTurn = 0;
+
 const Home = () => {
-  const [board, setBoard] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 3, 0, 0, 0],
-    [0, 0, 0, 1, 2, 3, 0, 0],
-    [0, 0, 3, 2, 1, 0, 0, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  const [board, setBoard] = useState(startBord);
 
   const [turn, setTurn] = useState(1);
 
@@ -74,9 +81,12 @@ const Home = () => {
     if (board[y][x] !== 0 && board[y][x] !== 3) {
       return;
     }
-
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
+      if (putableCell === 0) {
+        skipTurn = skipTurn + 1;
+        break;
+      }
       const dx = direction[0];
       const dy = direction[1];
       if (newBoard[y + dy] === undefined) continue;
@@ -99,27 +109,40 @@ const Home = () => {
             for (let i = distance; i > 0; i--) {
               newBoard[y + dy * i][x + dx * i] = turn;
             }
-            blackCell = 0;
-            whiteCell = 0;
-            for (let cy = 0; cy < 8; cy++) {
-              for (let cx = 0; cx < 8; cx++) {
-                if (countCell(cx, cy, newBoard)) {
-                  if (countCell(cx, cy, newBoard) === 'black') {
-                    blackCell = blackCell + 1;
-                  }
-                  if (countCell(cx, cy, newBoard) === 'white') {
-                    whiteCell = whiteCell + 1;
-                  }
-                }
-                if (newBoard[cy][cx] === 3) newBoard[cy][cx] = 0;
-                if (checkPutable(cx, cy, newBoard, 3 - turn)) newBoard[cy][cx] = 3;
-              }
-            }
-            setBoard(newBoard);
-            setTurn(3 - turn);
           }
         }
       }
+    }
+    if (skipTurn === 2) {
+      setBoard(startBord);
+      setTurn(1);
+      blackCell = 2;
+      whiteCell = 2;
+      putableCell = 4;
+    }
+    if (skipTurn === 0 || skipTurn === 1) {
+      blackCell = 0;
+      whiteCell = 0;
+      putableCell = 0;
+      for (let cy = 0; cy < 8; cy++) {
+        for (let cx = 0; cx < 8; cx++) {
+          if (newBoard[cy][cx] === 3) newBoard[cy][cx] = 0;
+          if (checkPutable(cx, cy, newBoard, 3 - turn)) newBoard[cy][cx] = 3;
+          if (countCell(cx, cy, newBoard)) {
+            if (countCell(cx, cy, newBoard) === 'black') {
+              blackCell = blackCell + 1;
+            }
+            if (countCell(cx, cy, newBoard) === 'white') {
+              whiteCell = whiteCell + 1;
+            }
+            if (countCell(cx, cy, newBoard) === 'putable') {
+              putableCell = putableCell + 1;
+            }
+          }
+        }
+      }
+      setBoard(newBoard);
+      setTurn(3 - turn);
     }
   };
 
