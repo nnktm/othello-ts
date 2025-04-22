@@ -42,8 +42,7 @@
 }
 
 .modal {
-  position: fixed;
-  inset: 0;
+  position: absolute;
   z-index: 999;
   display: flex;
   align-items: center;
@@ -54,6 +53,7 @@
 }
 
 .modalContent {
+  position: absolute;
   min-width: 300px;
   padding: 24px;
   background: white;

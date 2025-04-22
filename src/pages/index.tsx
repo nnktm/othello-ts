@@ -6,7 +6,7 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 3, 0, 0, 0],
   [0, 0, 0, 1, 2, 3, 0, 0],
-  [0, 0, 3, 2, 1, 0, 0, 0],
+  [0, 0, 3, 1, 1, 0, 0, 0],
   [0, 0, 0, 3, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -197,25 +197,25 @@ const Home = () => {
 
   return (
     <>
-      {isEnd ? (
-        <div className="modal">
-          <div className="modalContent">
-            <div className="modalHeader">
-              <h1>試ゲーム終了</h1>
-              <span className="modalClose" onClick={closeModal}>
-                x
-              </span>
-            </div>
-            <div className="modal-body">
-              <p>
-                黒の数{result.black}対白の数{result.white}で
-              </p>
-              <h2>{result.winner}の勝ち</h2>
+      <div className={styles.container}>
+        {isEnd ? (
+          <div className={styles.modal}>
+            <div className={styles.modalContainar}>
+              <div className={styles.modalHeader}>
+                <h1>ゲーム終了</h1>
+              </div>
+              <div className={styles.modalBody}>
+                <p>
+                  黒の数{result.black}対白の数{result.white}で
+                </p>
+                <h2>{result.winner}の勝ち</h2>
+                <span className={styles.modalClose} onClick={closeModal}>
+                  x
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
-      <div className={styles.container}>
+        ) : null}
         <div className={styles.board}>
           {board.map((row, y) =>
             row.map((color, x) => (
