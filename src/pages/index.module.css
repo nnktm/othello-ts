@@ -40,3 +40,42 @@
 .stone {
   border-radius: 50%;
 }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: rgb(255 255 255 / 85%);
+}
+
+.modalContent {
+  min-width: 300px;
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modalClose {
+  padding: 4px 12px;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.modalClose:hover {
+  color: #fff;
+  background: #3b7b94;
+}

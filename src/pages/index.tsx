@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.module.css';
 
 const startBord = [
@@ -6,7 +6,7 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 3, 0, 0, 0],
   [0, 0, 0, 1, 2, 3, 0, 0],
-  [0, 0, 3, 1, 1, 0, 0, 0],
+  [0, 0, 3, 2, 1, 0, 0, 0],
   [0, 0, 0, 3, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -64,6 +64,34 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
   }
 };
 
+const showResult = (board: number[][]) => {
+  let result_black = 0;
+  let result_white = 0;
+  for (let ey = 0; ey < 8; ey++) {
+    for (let ex = 0; ex < 8; ex++) {
+      if (board[ex][ey] === 1) {
+        result_black = result_black + 1;
+      }
+      if (board[ex][ey] === 2) {
+        result_white = result_white + 1;
+      }
+    }
+  }
+  let winner: string;
+  if (result_white < result_black) {
+    winner = '黒';
+  } else if (blackCell < whiteCell) {
+    winner = '白';
+  } else {
+    winner = '引き分け';
+  }
+  return {
+    black: result_black,
+    white: result_white,
+    winner,
+  };
+};
+
 let blackCell = 2;
 
 let whiteCell = 2;
@@ -74,15 +102,39 @@ let skipTurn = 0;
 
 const Home = () => {
   const [board, setBoard] = useState(startBord);
-
   const [turn, setTurn] = useState(1);
+  const [isEnd, setEnd] = useState(false);
+  const [result, setResult] = useState(showResult(startBord));
+
+  useEffect(() => {
+    if (isEnd) {
+      setResult(showResult(board));
+    }
+  }, [isEnd, board]);
+
+  const closeModal = () => {
+    setEnd(false);
+    setBoard(startBord);
+    setTurn(1);
+    blackCell = 2;
+    whiteCell = 2;
+    putableCell = 4;
+    skipTurn = 0;
+  };
 
   const handleOnClick = (x: number, y: number) => {
     if (board[y][x] !== 0 && board[y][x] !== 3) {
       return;
     }
+
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
+      if (blackCell + whiteCell === 64) {
+        setEnd(true);
+      }
+      if (blackCell === 0 || whiteCell === 0) {
+        setEnd(true);
+      }
       if (putableCell === 0) {
         skipTurn = skipTurn + 1;
         break;
@@ -113,13 +165,6 @@ const Home = () => {
         }
       }
     }
-    if (skipTurn === 2) {
-      setBoard(startBord);
-      setTurn(1);
-      blackCell = 2;
-      whiteCell = 2;
-      putableCell = 4;
-    }
     if (skipTurn === 0 || skipTurn === 1) {
       blackCell = 0;
       whiteCell = 0;
@@ -141,36 +186,60 @@ const Home = () => {
           }
         }
       }
+
       setBoard(newBoard);
       setTurn(3 - turn);
+    }
+    if (skipTurn === 2) {
+      setEnd(true);
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.board}>
-        {board.map((row, y) =>
-          row.map((color, x) => (
-            <div key={'${x}-${y}'} className={styles.cell} onClick={() => handleOnClick(x, y)}>
-              <div
-                className={styles.stone}
-                style={{
-                  backgroundColor:
-                    color === 1 ? '#3175AA' : color === 2 ? 'white' : color === 3 ? 'pink' : '',
-                  width: color === 3 ? '20%' : '70%',
-                  height: color === 3 ? '20%' : '70%',
-                }}
-              />
+    <>
+      {isEnd ? (
+        <div className="modal">
+          <div className="modalContent">
+            <div className="modalHeader">
+              <h1>試ゲーム終了</h1>
+              <span className="modalClose" onClick={closeModal}>
+                x
+              </span>
             </div>
-          )),
-        )}
+            <div className="modal-body">
+              <p>
+                黒の数{result.black}対白の数{result.white}で
+              </p>
+              <h2>{result.winner}の勝ち</h2>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <div className={styles.container}>
+        <div className={styles.board}>
+          {board.map((row, y) =>
+            row.map((color, x) => (
+              <div key={'${x}-${y}'} className={styles.cell} onClick={() => handleOnClick(x, y)}>
+                <div
+                  className={styles.stone}
+                  style={{
+                    backgroundColor:
+                      color === 1 ? '#3175AA' : color === 2 ? 'white' : color === 3 ? 'pink' : '',
+                    width: color === 3 ? '20%' : '70%',
+                    height: color === 3 ? '20%' : '70%',
+                  }}
+                />
+              </div>
+            )),
+          )}
+        </div>
+        <div className={styles.showInformation}>
+          <p>{showTurn(turn)}のターン</p>
+          <p>黒：{blackCell}枚</p>
+          <p>白：{whiteCell}枚</p>
+        </div>
       </div>
-      <div className={styles.showInformation}>
-        <p>{showTurn(turn)}のターン</p>
-        <p>黒：{blackCell}枚</p>
-        <p>白：{whiteCell}枚</p>
-      </div>
-    </div>
+    </>
   );
 };
 
