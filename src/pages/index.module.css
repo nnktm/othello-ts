@@ -17,15 +17,37 @@
   border: solid 3px #68acc6;
 }
 
+.infomation {
+  margin-left: 10%;
+}
+
 .showInformation {
   padding-right: 50px;
   padding-left: 50px;
-  margin: 15px;
-  font-size: 15px;
+  margin: 20px;
+  margin-left: 40px;
+  font-size: 24px;
   color: #3b7b94;
   background-color: #ccddea;
   border: solid 5px #68acc6;
   border-radius: 20px;
+}
+
+.reset {
+  display: flex;
+  padding: 15px 10px;
+  margin: 15px;
+  margin-left: 50px;
+  font-size: 20px;
+  color: #3b7b94;
+  background-color: #ccddea;
+  border: solid 5px #68acc6;
+  border-radius: 20px;
+}
+
+.reset:hover {
+  color: #fff;
+  background: #3b7b94;
 }
 
 .cell {

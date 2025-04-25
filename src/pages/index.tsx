@@ -122,6 +122,15 @@ const Home = () => {
     skipTurn = 0;
   };
 
+  const boardReset = () => {
+    setBoard(startBord);
+    setTurn(1);
+    blackCell = 2;
+    whiteCell = 2;
+    putableCell = 4;
+    skipTurn = 0;
+  };
+
   const handleOnClick = (x: number, y: number) => {
     if (board[y][x] !== 0 && board[y][x] !== 3) {
       return;
@@ -233,10 +242,15 @@ const Home = () => {
             )),
           )}
         </div>
-        <div className={styles.showInformation}>
-          <p>{showTurn(turn)}のターン</p>
-          <p>黒：{blackCell}枚</p>
-          <p>白：{whiteCell}枚</p>
+        <div className={styles.infomation}>
+          <div className={styles.showInformation}>
+            <p>{showTurn(turn)}のターン</p>
+            <p>黒：{blackCell}枚</p>
+            <p>白：{whiteCell}枚</p>
+          </div>
+          <button className={styles.reset} onClick={boardReset}>
+            盤面をリセットする
+          </button>
         </div>
       </div>
     </>
