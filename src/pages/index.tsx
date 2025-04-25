@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './index.module.css';
 
 const startBord = [
@@ -6,7 +6,7 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 3, 0, 0, 0],
   [0, 0, 0, 1, 2, 3, 0, 0],
-  [0, 0, 3, 2, 1, 0, 0, 0],
+  [0, 0, 3, 1, 1, 0, 0, 0],
   [0, 0, 0, 3, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -103,17 +103,12 @@ let skipTurn = 0;
 const Home = () => {
   const [board, setBoard] = useState(startBord);
   const [turn, setTurn] = useState(1);
-  const [isEnd, setEnd] = useState(false);
-  const [result, setResult] = useState(showResult(startBord));
+  const result = showResult(board);
 
-  useEffect(() => {
-    if (isEnd) {
-      setResult(showResult(board));
-    }
-  }, [isEnd, board]);
+  const isEnd =
+    skipTurn === 2 || whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
 
   const closeModal = () => {
-    setEnd(false);
     setBoard(startBord);
     setTurn(1);
     blackCell = 2;
@@ -138,12 +133,6 @@ const Home = () => {
 
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
-      if (blackCell + whiteCell === 64) {
-        setEnd(true);
-      }
-      if (blackCell === 0 || whiteCell === 0) {
-        setEnd(true);
-      }
       if (putableCell === 0) {
         skipTurn = skipTurn + 1;
         break;
@@ -198,9 +187,6 @@ const Home = () => {
 
       setBoard(newBoard);
       setTurn(3 - turn);
-    }
-    if (skipTurn === 2) {
-      setEnd(true);
     }
   };
 
