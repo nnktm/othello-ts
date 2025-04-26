@@ -6,7 +6,7 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 3, 0, 0, 0],
   [0, 0, 0, 1, 2, 3, 0, 0],
-  [0, 0, 3, 1, 1, 0, 0, 0],
+  [0, 0, 3, 2, 1, 0, 0, 0],
   [0, 0, 0, 3, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -65,65 +65,61 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
 };
 
 const showResult = (board: number[][]) => {
-  let result_black = 0;
-  let result_white = 0;
+  let resultBlack = 0;
+  let resultWhite = 0;
   for (let ey = 0; ey < 8; ey++) {
     for (let ex = 0; ex < 8; ex++) {
       if (board[ex][ey] === 1) {
-        result_black = result_black + 1;
+        resultBlack = resultBlack + 1;
       }
       if (board[ex][ey] === 2) {
-        result_white = result_white + 1;
+        resultWhite = resultWhite + 1;
       }
     }
   }
   let winner: string;
-  if (result_white < result_black) {
+  if (resultWhite < resultBlack) {
     winner = '黒';
-  } else if (blackCell < whiteCell) {
+  } else if (resultBlack < resultWhite) {
     winner = '白';
   } else {
     winner = '引き分け';
   }
   return {
-    black: result_black,
-    white: result_white,
+    black: resultBlack,
+    white: resultWhite,
     winner,
   };
 };
 
-let blackCell = 2;
-
-let whiteCell = 2;
-
-let putableCell = 4;
-
-let skipTurn = 0;
-
 const Home = () => {
   const [board, setBoard] = useState(startBord);
   const [turn, setTurn] = useState(1);
+  const [skip, setSkip] = useState(0);
+  const [blackCell, setBrack] = useState(2);
+  const [whiteCell, setWhite] = useState(2);
+  const [putableCell, setPutable] = useState(4);
+
   const result = showResult(board);
 
-  const isEnd =
-    skipTurn === 2 || whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
+  const isEnd = skip === 2 || whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
 
   const closeModal = () => {
     setBoard(startBord);
     setTurn(1);
-    blackCell = 2;
-    whiteCell = 2;
-    putableCell = 4;
-    skipTurn = 0;
+    setSkip(0);
+    setBrack(2);
+    setWhite(2);
+    setPutable(4);
   };
 
   const boardReset = () => {
     setBoard(startBord);
     setTurn(1);
-    blackCell = 2;
-    whiteCell = 2;
-    putableCell = 4;
-    skipTurn = 0;
+    setBrack(2);
+    setWhite(2);
+    setPutable(4);
+    setSkip(0);
   };
 
   const handleOnClick = (x: number, y: number) => {
@@ -134,28 +130,20 @@ const Home = () => {
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
       if (putableCell === 0) {
-        skipTurn = skipTurn + 1;
+        setSkip(1);
+        break;
+      }
+      if (putableCell === 0 && skip === 1) {
+        setSkip(2);
         break;
       }
       const dx = direction[0];
       const dy = direction[1];
-      if (newBoard[y + dy] === undefined) continue;
-      if (newBoard[y + dy][x + dx] === 3 - turn) {
+      if (newBoard[y][x] === 3) {
         for (let distance = 2; distance < 8; distance++) {
-          let isok = true;
-          if (newBoard[y + dy * distance] === undefined) break;
+          if (board[y + dy * distance] === undefined) break;
           if (newBoard[y + dy * distance][x + dx * distance] === turn) {
-            for (let distanceCheck = 2; distanceCheck < distance; distanceCheck++) {
-              if (
-                newBoard[y + dy * distanceCheck][x + dx * distanceCheck] === 0 ||
-                newBoard[y + dy * distanceCheck][x + dx * distanceCheck] === 3
-              ) {
-                isok = false;
-              }
-            }
-            if (isok === true) {
-              newBoard[y][x] = turn;
-            }
+            newBoard[y][x] = turn;
             for (let i = distance; i > 0; i--) {
               newBoard[y + dy * i][x + dx * i] = turn;
             }
@@ -163,28 +151,30 @@ const Home = () => {
         }
       }
     }
-    if (skipTurn === 0 || skipTurn === 1) {
-      blackCell = 0;
-      whiteCell = 0;
-      putableCell = 0;
+    if (skip === 0 || skip === 1) {
+      let newBlack = 0;
+      let newWhite = 0;
+      let newPutable = 0;
       for (let cy = 0; cy < 8; cy++) {
         for (let cx = 0; cx < 8; cx++) {
           if (newBoard[cy][cx] === 3) newBoard[cy][cx] = 0;
           if (checkPutable(cx, cy, newBoard, 3 - turn)) newBoard[cy][cx] = 3;
           if (countCell(cx, cy, newBoard)) {
             if (countCell(cx, cy, newBoard) === 'black') {
-              blackCell = blackCell + 1;
+              newBlack = newBlack + 1;
             }
             if (countCell(cx, cy, newBoard) === 'white') {
-              whiteCell = whiteCell + 1;
+              newWhite = newWhite + 1;
             }
             if (countCell(cx, cy, newBoard) === 'putable') {
-              putableCell = putableCell + 1;
+              newPutable = newPutable + 1;
             }
           }
         }
       }
-
+      setBrack(newBlack);
+      setWhite(newWhite);
+      setPutable(newPutable);
       setBoard(newBoard);
       setTurn(3 - turn);
     }
