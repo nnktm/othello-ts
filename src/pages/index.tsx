@@ -9,7 +9,7 @@ const startBord = [
   [0, 0, 0, 1, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 2, 0, 0],
 ];
 
 const DIRECTIONS = [
@@ -130,6 +130,16 @@ const Home = () => {
     if (board[y][x] !== 0) {
       return;
     }
+    if (skipFirst(board, turn) === true) {
+      if (skipSecond(board, turn) === true) {
+        setBoard(startBord);
+        setTurn(1);
+        alert('ゲーム終了');
+        return;
+      } else alert('your turn skipped');
+      setTurn(3 - turn);
+      return;
+    }
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
       const dx = direction[0];
@@ -145,17 +155,9 @@ const Home = () => {
           }
         }
       }
-    }
-    setBoard(newBoard);
-    setTurn(3 - turn);
-    if (skipFirst(newBoard, turn) === true) {
-      if (skipSecond(newBoard, turn) === true) {
-        alert('ゲーム終了');
-        setBoard(newBoard);
-        setTurn(1);
-      } else alert('your turn skipped');
+      setBoard(newBoard);
       setTurn(3 - turn);
-    } else setTurn(turn);
+    }
   };
 
   const boardView = structuredClone(board);
