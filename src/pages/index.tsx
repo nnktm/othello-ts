@@ -6,7 +6,7 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 1, 2, 0, 0, 0],
-  [0, 0, 0, 2, 1, 0, 0, 0],
+  [0, 0, 0, 1, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -22,7 +22,7 @@ const DIRECTIONS = [
   [-1, 0],
   [-1, -1],
 ];
-
+//ターンを返す
 const showTurn = (turn: number) => {
   if (turn === 1) {
     return '黒';
@@ -30,14 +30,7 @@ const showTurn = (turn: number) => {
     return '白';
   }
 };
-
-const countCell = (cbx: number, cby: number, board: number[][]) => {
-  if (board[cbx][cby] === 1) return 'black';
-  if (board[cbx][cby] === 2) return 'white';
-  if (board[cbx][cby] === 3) return 'puttable';
-  return null;
-};
-
+//[cy][cx]に石を置くことが可能かどうか判断し可能な場合trueを返す
 const checkPutable = (cx: number, cy: number, board: number[][], turn: number) => {
   if (board[cy][cx] === 1 || board[cy][cx] === 2) {
     return false;
@@ -64,7 +57,31 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
   }
   return false;
 };
+//スキップについての処理
+const skipFirst = (board: number[][], turn: number) => {
+  let puttableCell = 0;
+  for (let cy = 0; cy < 8; cy++) {
+    for (let cx = 0; cx < 8; cx++) {
+      if (checkPutable(cx, cy, board, turn)) puttableCell = puttableCell + 1;
+    }
+  }
+  if (puttableCell === 0) return true;
+  else return false;
+};
+const skipSecond = (board: number[][], turn: number) => {
+  let nextPuttableCell = 0;
+  if (skipFirst(board, turn) === true) {
+    for (let cy = 0; cy < 8; cy++) {
+      for (let cx = 0; cx < 8; cx++) {
+        if (checkPutable(cx, cy, board, 3 - turn)) nextPuttableCell = nextPuttableCell + 1;
+      }
+    }
+  }
+  if (nextPuttableCell === 0) return true;
+  else return false;
+};
 
+//ゲームの結果（白と黒の石の数、勝者）を返す
 const showResult = (board: number[][]) => {
   let resultBlack = 0;
   let resultWhite = 0;
@@ -96,40 +113,27 @@ const showResult = (board: number[][]) => {
 const Home = () => {
   const [board, setBoard] = useState(startBord);
   const [turn, setTurn] = useState(1);
-  const [skip, setSkip] = useState(0);
 
   const result = showResult(board);
 
   const closeModal = () => {
     setBoard(startBord);
     setTurn(1);
-    setSkip(0);
   };
 
   const boardReset = () => {
     setBoard(startBord);
     setTurn(1);
-    setSkip(0);
   };
 
   const handleOnClick = (x: number, y: number) => {
     if (board[y][x] !== 0) {
       return;
     }
-
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
-      // if (putableCell === 0) {
-      //   setSkip(1);
-      //   break;
-      // }
-      // if (putableCell === 0 && skip === 1) {
-      //   setSkip(2);
-      //   break;
-      // }
       const dx = direction[0];
       const dy = direction[1];
-
       if (checkPutable(x, y, board, turn)) {
         for (let distance = 2; distance < 8; distance++) {
           if (board[y + dy * distance] === undefined) break;
@@ -142,35 +146,34 @@ const Home = () => {
         }
       }
     }
-    if (skip === 0 || skip === 1) {
-      setBoard(newBoard);
+    setBoard(newBoard);
+    setTurn(3 - turn);
+    if (skipFirst(newBoard, turn) === true) {
+      if (skipSecond(newBoard, turn) === true) {
+        alert('ゲーム終了');
+        setBoard(newBoard);
+        setTurn(1);
+      } else alert('your turn skipped');
       setTurn(3 - turn);
-    }
+    } else setTurn(turn);
   };
 
   const boardView = structuredClone(board);
 
   let blackCell = 0;
   let whiteCell = 0;
-  // let puttableCell = 0;
   for (let cy = 0; cy < 8; cy++) {
     for (let cx = 0; cx < 8; cx++) {
       if (checkPutable(cx, cy, board, turn)) boardView[cy][cx] = 3;
-      if (countCell(cx, cy, board)) {
-        if (countCell(cx, cy, board) === 'black') {
-          blackCell = blackCell + 1;
-        }
-        if (countCell(cx, cy, board) === 'white') {
-          whiteCell = whiteCell + 1;
-        }
-        //   if (countCell(cx, cy, board) === 'putable') {
-        //     putableCell = putableCell + 1;
-        //   }
+      if (boardView[cy][cx] === 1) {
+        blackCell = blackCell + 1;
+      }
+      if (boardView[cy][cx] === 2) {
+        whiteCell = whiteCell + 1;
       }
     }
   }
-
-  const isEnd = skip === 2 || whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
+  const isEnd = whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
   return (
     <>
       <div className={styles.container}>
