@@ -58,40 +58,9 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
   return false;
 };
 
-//ゲームの結果（白と黒の石の数、勝者）を返す
-const showResult = (board: number[][]) => {
-  let resultBlack = 0;
-  let resultWhite = 0;
-  for (let ey = 0; ey < 8; ey++) {
-    for (let ex = 0; ex < 8; ex++) {
-      if (board[ex][ey] === 1) {
-        resultBlack = resultBlack + 1;
-      }
-      if (board[ex][ey] === 2) {
-        resultWhite = resultWhite + 1;
-      }
-    }
-  }
-  let winner: string;
-  if (resultWhite < resultBlack) {
-    winner = '黒';
-  } else if (resultBlack < resultWhite) {
-    winner = '白';
-  } else {
-    winner = '引き分け';
-  }
-  return {
-    black: resultBlack,
-    white: resultWhite,
-    winner,
-  };
-};
-
 const Home = () => {
   const [board, setBoard] = useState(startBord);
   const [turn, setTurn] = useState(1);
-
-  const result = showResult(board);
 
   const closeModal = () => {
     setBoard(startBord);
@@ -132,6 +101,7 @@ const Home = () => {
   let whiteCell = 0;
   let puttableCell = 0;
   let nextPuttableCell = 0;
+  let winner: string;
   let isSkip = false;
   for (let cy = 0; cy < 8; cy++) {
     for (let cx = 0; cx < 8; cx++) {
@@ -146,6 +116,13 @@ const Home = () => {
         whiteCell = whiteCell + 1;
       }
     }
+  }
+  if (whiteCell < blackCell) {
+    winner = '黒';
+  } else if (blackCell < whiteCell) {
+    winner = '白';
+  } else {
+    winner = '引き分け';
   }
   // スキップについての処理
   if (puttableCell === 0) {
@@ -172,9 +149,9 @@ const Home = () => {
               </div>
               <div className={styles.modalBody}>
                 <p>
-                  黒の数{result.black} 対 白の数{result.white}で
+                  黒の数{blackCell} 対 白の数{whiteCell}で
                 </p>
-                <h2>{result.winner}の勝ち!!</h2>
+                <h2>{winner}の勝ち!!</h2>
                 <span className={styles.modalClose} onClick={closeModal}>
                   閉じる
                 </span>
