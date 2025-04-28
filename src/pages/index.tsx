@@ -57,29 +57,6 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
   }
   return false;
 };
-//スキップについての処理
-const skipFirst = (board: number[][], turn: number) => {
-  let puttableCell = 0;
-  for (let cy = 0; cy < 8; cy++) {
-    for (let cx = 0; cx < 8; cx++) {
-      if (checkPutable(cx, cy, board, turn)) puttableCell = puttableCell + 1;
-    }
-  }
-  if (puttableCell === 0) return true;
-  else return false;
-};
-const skipSecond = (board: number[][], turn: number) => {
-  let nextPuttableCell = 0;
-  if (skipFirst(board, turn) === true) {
-    for (let cy = 0; cy < 8; cy++) {
-      for (let cx = 0; cx < 8; cx++) {
-        if (checkPutable(cx, cy, board, 3 - turn)) nextPuttableCell = nextPuttableCell + 1;
-      }
-    }
-  }
-  if (nextPuttableCell === 0) return true;
-  else return false;
-};
 
 //ゲームの結果（白と黒の石の数、勝者）を返す
 const showResult = (board: number[][]) => {
@@ -130,16 +107,6 @@ const Home = () => {
     if (board[y][x] !== 0) {
       return;
     }
-    if (skipFirst(board, turn) === true) {
-      if (skipSecond(board, turn) === true) {
-        setBoard(startBord);
-        setTurn(1);
-        alert('ゲーム終了');
-        return;
-      } else alert('your turn skipped');
-      setTurn(3 - turn);
-      return;
-    }
     const newBoard = structuredClone(board);
     for (const direction of DIRECTIONS) {
       const dx = direction[0];
@@ -161,12 +128,17 @@ const Home = () => {
   };
 
   const boardView = structuredClone(board);
-
   let blackCell = 0;
   let whiteCell = 0;
+  let puttableCell = 0;
+  let nextPuttableCell = 0;
+  let isSkip = false;
   for (let cy = 0; cy < 8; cy++) {
     for (let cx = 0; cx < 8; cx++) {
-      if (checkPutable(cx, cy, board, turn)) boardView[cy][cx] = 3;
+      if (checkPutable(cx, cy, board, turn)) {
+        boardView[cy][cx] = 3;
+        puttableCell = puttableCell + 1;
+      }
       if (boardView[cy][cx] === 1) {
         blackCell = blackCell + 1;
       }
@@ -175,7 +147,20 @@ const Home = () => {
       }
     }
   }
-  const isEnd = whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64;
+  // スキップについての処理
+  if (puttableCell === 0) {
+    for (let cy = 0; cy < 8; cy++) {
+      for (let cx = 0; cx < 8; cx++) {
+        if (checkPutable(cx, cy, board, 3 - turn)) nextPuttableCell = nextPuttableCell + 1;
+      }
+    }
+    if (nextPuttableCell === 0) isSkip = true;
+    else {
+      setTurn(3 - turn);
+    }
+  }
+  const isEnd =
+    whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64 || isSkip === true;
   return (
     <>
       <div className={styles.container}>
