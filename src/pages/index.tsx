@@ -6,10 +6,10 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 1, 2, 0, 0, 0],
-  [0, 0, 0, 1, 1, 0, 0, 0],
+  [0, 0, 0, 2, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 2, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
 const DIRECTIONS = [
@@ -22,14 +22,6 @@ const DIRECTIONS = [
   [-1, 0],
   [-1, -1],
 ];
-//ターンを返す
-const showTurn = (turn: number) => {
-  if (turn === 1) {
-    return '黒';
-  } else {
-    return '白';
-  }
-};
 //[cy][cx]に石を置くことが可能かどうか判断し可能な場合trueを返す
 const checkPutable = (cx: number, cy: number, board: number[][], turn: number) => {
   if (board[cy][cx] === 1 || board[cy][cx] === 2) {
@@ -178,7 +170,7 @@ const Home = () => {
         </div>
         <div className={styles.infomation}>
           <div className={styles.showInformation}>
-            <p>{showTurn(turn)}のターン</p>
+            <p>{turn === 1 ? '黒のターン' : '白のターン'}</p>
             <p>黒：{blackCell}枚</p>
             <p>白：{whiteCell}枚</p>
           </div>
