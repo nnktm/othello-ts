@@ -5,7 +5,7 @@ const startBoard = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 1, 0, 0, 0],
+  [0, 0, 0, 1, 2, 0, 0, 0],
   [0, 0, 0, 2, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -92,7 +92,7 @@ const Home = () => {
   };
 
   const handleOnClick = (x: number, y: number) => {
-    if (board[y][x] !== 0) {
+    if (board[y][x] !== 0 || checkPutable(x, y, board, turn) === false) {
       return;
     }
     const newBoard = structuredClone(board);
