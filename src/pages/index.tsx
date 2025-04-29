@@ -5,7 +5,7 @@ const startBoard = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 1, 2, 0, 0, 0],
+  [0, 0, 0, 1, 1, 0, 0, 0],
   [0, 0, 0, 2, 1, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -170,9 +170,15 @@ const Home = () => {
                   className={styles.stone}
                   style={{
                     backgroundColor:
-                      color === 1 ? '#3175AA' : color === 2 ? 'white' : color === 3 ? 'pink' : '',
-                    width: color === 3 ? '50%' : '70%',
-                    height: color === 3 ? '50%' : '70%',
+                      color === 1
+                        ? '#212b33'
+                        : color === 2
+                          ? 'white'
+                          : color === 3
+                            ? '#d86161'
+                            : '',
+                    width: color === 3 ? '30%' : '70%',
+                    height: color === 3 ? '30%' : '70%',
                   }}
                 />
               </div>
