@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './index.module.css';
 
-const startBord = [
+const startBoard = [
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0],
@@ -12,16 +12,16 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
-const testBoard = [
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 1, 2, 2, 2],
-  [0, 0, 0, 1, 1, 1, 2, 1],
-  [0, 0, 0, 2, 2, 2, 2, 1],
-  [0, 0, 0, 0, 0, 0, 1, 1],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0],
-];
+// const testBoard = [
+//   [0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 1, 2, 2, 2],
+//   [0, 0, 0, 1, 1, 1, 2, 1],
+//   [0, 0, 0, 2, 2, 2, 2, 1],
+//   [0, 0, 0, 0, 0, 0, 1, 1],
+//   [0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0],
+// ];
 
 const DIRECTIONS = [
   [0, -1],
@@ -55,18 +55,39 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
   }
   return false;
 };
+//石をおいてひっくり返す動作
+const turnCell = (cx: number, cy: number, board: number[][], turn: number) => {
+  const canTurn: [number, number][] = [];
+  if (checkPutable(cx, cy, board, turn)) {
+    for (const direction of DIRECTIONS) {
+      const dx = direction[0];
+      const dy = direction[1];
+      for (let distance = 2; distance < 8; distance++) {
+        if (board[cy + dy * distance] === undefined) break;
+        if (board[cy + dy * distance][cx + dx * distance] === turn) {
+          canTurn.push([cy, cx]);
+          for (let i = distance; i > 0; i--) canTurn.push([cy + dy * i, cx + dx * i]);
+        }
+      }
+    }
+  }
+  for (const [y, x] of canTurn) {
+    board[y][x] = turn;
+  }
+  return true;
+};
 
 const Home = () => {
-  const [board, setBoard] = useState(testBoard);
+  const [board, setBoard] = useState(startBoard);
   const [turn, setTurn] = useState(1);
 
   const closeModal = () => {
-    setBoard(startBord);
+    setBoard(startBoard);
     setTurn(1);
   };
 
   const boardReset = () => {
-    setBoard(startBord);
+    setBoard(startBoard);
     setTurn(1);
   };
 
@@ -75,23 +96,26 @@ const Home = () => {
       return;
     }
     const newBoard = structuredClone(board);
-    for (const direction of DIRECTIONS) {
-      const dx = direction[0];
-      const dy = direction[1];
-      if (checkPutable(x, y, board, turn)) {
-        for (let distance = 2; distance < 8; distance++) {
-          if (board[y + dy * distance] === undefined) break;
-          if (newBoard[y + dy * distance][x + dx * distance] === turn) {
-            newBoard[y][x] = turn;
-            for (let i = distance; i > 0; i--) {
-              newBoard[y + dy * i][x + dx * i] = turn;
-            }
-          }
-        }
-      }
-      setBoard(newBoard);
-      setTurn(3 - turn);
+    if (turnCell(x, y, newBoard, turn)) {
+      newBoard[y][x] = turn;
     }
+    setBoard(newBoard);
+    setTurn(3 - turn);
+    // for (const direction of DIRECTIONS) {
+    //   const dx = direction[0];
+    //   const dy = direction[1];
+    //   if (checkPutable(x, y, board, turn)) {
+    //     for (let distance = 2; distance < 8; distance++) {
+    //       if (board[y + dy * distance] === undefined) break;
+    //       if (newBoard[y + dy * distance][x + dx * distance] === turn) {
+    //         newBoard[y][x] = turn;
+    //         for (let i = distance; i > 0; i--) {
+    //           newBoard[y + dy * i][x + dx * i] = turn;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   };
 
   const boardView = structuredClone(board);
