@@ -43,14 +43,13 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
     const dy = direction[1];
     if (board[cy + dy] === undefined) continue;
     if (board[cy + dy][cx + dx] === 3 - turn) {
-      for (let distance = 2; distance < 8; distance++) {
+      for (let distance = 1; distance < 8; distance++) {
         if (board[cy + dy * distance] === undefined) break;
         if (board[cy + dy * distance][cx + dx * distance] === 0) break;
         if (board[cy + dy * distance][cx + dx * distance] === 3 - turn) continue;
         if (board[cy + dy * distance][cx + dx * distance] === turn) {
           return true;
         }
-        return false;
       }
     }
   }
