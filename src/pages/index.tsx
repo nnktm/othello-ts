@@ -12,6 +12,17 @@ const startBord = [
   [0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
+const testBoard = [
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1, 2, 2, 2],
+  [0, 0, 0, 1, 1, 1, 2, 1],
+  [0, 0, 0, 2, 2, 2, 2, 1],
+  [0, 0, 0, 0, 0, 0, 1, 1],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const DIRECTIONS = [
   [0, -1],
   [1, -1],
@@ -34,11 +45,7 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
     if (board[cy + dy][cx + dx] === 3 - turn) {
       for (let distance = 2; distance < 8; distance++) {
         if (board[cy + dy * distance] === undefined) break;
-        if (
-          board[cy + dy * distance][cx + dx * distance] === 3 ||
-          board[cy + dy * distance][cx + dx * distance] === 0
-        )
-          break;
+        if (board[cy + dy * distance][cx + dx * distance] === 0) break;
         if (board[cy + dy * distance][cx + dx * distance] === 3 - turn) continue;
         if (board[cy + dy * distance][cx + dx * distance] === turn) {
           return true;
@@ -51,7 +58,7 @@ const checkPutable = (cx: number, cy: number, board: number[][], turn: number) =
 };
 
 const Home = () => {
-  const [board, setBoard] = useState(startBord);
+  const [board, setBoard] = useState(testBoard);
   const [turn, setTurn] = useState(1);
 
   const closeModal = () => {
@@ -89,26 +96,18 @@ const Home = () => {
   };
 
   const boardView = structuredClone(board);
-  let blackCell = 0;
-  let whiteCell = 0;
-  let puttableCell = 0;
   let nextPuttableCell = 0;
   let winner: string;
   let isSkip = false;
   for (let cy = 0; cy < 8; cy++) {
     for (let cx = 0; cx < 8; cx++) {
-      if (checkPutable(cx, cy, board, turn)) {
-        boardView[cy][cx] = 3;
-        puttableCell = puttableCell + 1;
-      }
-      if (boardView[cy][cx] === 1) {
-        blackCell = blackCell + 1;
-      }
-      if (boardView[cy][cx] === 2) {
-        whiteCell = whiteCell + 1;
-      }
+      if (checkPutable(cx, cy, board, turn)) boardView[cy][cx] = 3;
     }
   }
+  const blackCell = boardView.flat().filter((num) => num === 1).length;
+  const whiteCell = boardView.flat().filter((num) => num === 2).length;
+  const puttableCell = boardView.flat().filter((num) => num === 3).length;
+
   if (whiteCell < blackCell) {
     winner = '黒';
   } else if (blackCell < whiteCell) {
