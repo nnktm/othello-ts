@@ -104,39 +104,48 @@ const Home = () => {
   };
 
   const boardView = structuredClone(board);
-  let nextPuttableCell = 0;
-  let winner: string;
-  let isSkip = false;
+  const values = {
+    blackCell: 0,
+    whiteCell: 0,
+    puttableCell: 0,
+    nextPuttableCell: 0,
+    isSkip: false,
+    winner: 'none',
+  };
   for (let cy = 0; cy < 8; cy++) {
     for (let cx = 0; cx < 8; cx++) {
       if (checkPutable(cx, cy, board, turn)) boardView[cy][cx] = 3;
     }
   }
-  const blackCell = boardView.flat().filter((num) => num === 1).length;
-  const whiteCell = boardView.flat().filter((num) => num === 2).length;
-  const puttableCell = boardView.flat().filter((num) => num === 3).length;
+  values.blackCell = boardView.flat().filter((num) => num === 1).length;
+  values.whiteCell = boardView.flat().filter((num) => num === 2).length;
+  values.puttableCell = boardView.flat().filter((num) => num === 3).length;
 
-  if (whiteCell < blackCell) {
-    winner = '黒';
-  } else if (blackCell < whiteCell) {
-    winner = '白';
+  if (values.whiteCell < values.blackCell) {
+    values.winner = '黒';
+  } else if (values.blackCell < values.whiteCell) {
+    values.winner = '白';
   } else {
-    winner = '引き分け';
+    values.winner = '引き分け';
   }
   // スキップについての処理
-  if (puttableCell === 0) {
+  if (values.puttableCell === 0) {
     for (let cy = 0; cy < 8; cy++) {
       for (let cx = 0; cx < 8; cx++) {
-        if (checkPutable(cx, cy, board, 3 - turn)) nextPuttableCell = nextPuttableCell + 1;
+        if (checkPutable(cx, cy, board, 3 - turn))
+          values.nextPuttableCell = values.nextPuttableCell + 1;
       }
     }
-    if (nextPuttableCell === 0) isSkip = true;
+    if (values.nextPuttableCell === 0) values.isSkip = true;
     else {
       setTurn(3 - turn);
     }
   }
   const isEnd =
-    whiteCell === 0 || blackCell === 0 || whiteCell + blackCell === 64 || isSkip === true;
+    values.whiteCell === 0 ||
+    values.blackCell === 0 ||
+    values.whiteCell + values.blackCell === 64 ||
+    values.isSkip === true;
   return (
     <>
       <div className={styles.container}>
@@ -148,11 +157,11 @@ const Home = () => {
               </div>
               <div className={styles.modalBody}>
                 <p>
-                  黒の数{blackCell} 対 白の数{whiteCell}で
+                  黒の数{values.blackCell} 対 白の数{values.whiteCell}で
                 </p>
                 <h2>
-                  {winner === '白' || winner === '黒'
-                    ? `${JSON.stringify(winner)}の勝ち!!`
+                  {values.winner === '白' || values.winner === '黒'
+                    ? `${JSON.stringify(values.winner)}の勝ち!!`
                     : '引き分け'}
                 </h2>
                 <span className={styles.modalClose} onClick={closeModal}>
@@ -188,8 +197,8 @@ const Home = () => {
         <div className={styles.infomation}>
           <div className={styles.showInformation}>
             <p>{turn === 1 ? '黒のターン' : '白のターン'}</p>
-            <p>黒：{blackCell}枚</p>
-            <p>白：{whiteCell}枚</p>
+            <p>黒：{values.blackCell}枚</p>
+            <p>白：{values.whiteCell}枚</p>
           </div>
           <button className={styles.reset} onClick={boardReset}>
             盤面をリセットする
