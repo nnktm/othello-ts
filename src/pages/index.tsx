@@ -62,8 +62,10 @@ const turnCell = (cx: number, cy: number, board: number[][], turn: number) => {
     for (const direction of DIRECTIONS) {
       const dx = direction[0];
       const dy = direction[1];
-      for (let distance = 2; distance < 8; distance++) {
+      for (let distance = 1; distance < 8; distance++) {
         if (board[cy + dy * distance] === undefined) break;
+        if (board[cy + dy * distance][cx + dx * distance] === 0) break;
+        if (board[cy + dy * distance][cx + dx * distance] === 3 - turn) continue;
         if (board[cy + dy * distance][cx + dx * distance] === turn) {
           canTurn.push([cy, cx]);
           for (let i = distance; i > 0; i--) canTurn.push([cy + dy * i, cx + dx * i]);
