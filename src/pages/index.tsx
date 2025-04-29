@@ -101,21 +101,6 @@ const Home = () => {
     }
     setBoard(newBoard);
     setTurn(3 - turn);
-    // for (const direction of DIRECTIONS) {
-    //   const dx = direction[0];
-    //   const dy = direction[1];
-    //   if (checkPutable(x, y, board, turn)) {
-    //     for (let distance = 2; distance < 8; distance++) {
-    //       if (board[y + dy * distance] === undefined) break;
-    //       if (newBoard[y + dy * distance][x + dx * distance] === turn) {
-    //         newBoard[y][x] = turn;
-    //         for (let i = distance; i > 0; i--) {
-    //           newBoard[y + dy * i][x + dx * i] = turn;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   };
 
   const boardView = structuredClone(board);
@@ -165,7 +150,11 @@ const Home = () => {
                 <p>
                   黒の数{blackCell} 対 白の数{whiteCell}で
                 </p>
-                <h2>{winner}の勝ち!!</h2>
+                <h2>
+                  {winner === '白' || winner === '黒'
+                    ? `${JSON.stringify(winner)}の勝ち!!`
+                    : '引き分け'}
+                </h2>
                 <span className={styles.modalClose} onClick={closeModal}>
                   閉じる
                 </span>
